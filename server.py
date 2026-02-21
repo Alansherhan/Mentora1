@@ -869,11 +869,11 @@ chatbot = ChatBot(data_manager, nlp_processor, notes_manager, pyq_manager)
 # ============= ROUTES =============
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(str(BASE_DIR), 'index.html')
 
 @app.route('/admin')
 def admin():
-    return send_from_directory('.', 'admin.html')
+    return send_from_directory(str(BASE_DIR), 'admin.html')
 
 # Chat API
 # Chat API

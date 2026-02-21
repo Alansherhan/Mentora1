@@ -10,28 +10,34 @@ import random
 from typing import Dict, List, Tuple, Optional, Any
 from collections import Counter
 
+import os
+import sys
+
+NLTK_AVAILABLE = False
 try:
     import nltk
     from nltk.corpus import stopwords
     from nltk.tokenize import word_tokenize
     from nltk.stem import WordNetLemmatizer
     
-    # Download required NLTK data (silently)
-    import os
-    import sys
-    # Suppress NLTK download messages
-    old_stdout = sys.stdout
-    sys.stdout = open(os.devnull, 'w')
+    # Try to download NLTK data silently (may fail on PythonAnywhere free tier)
     try:
-        nltk.download('punkt', quiet=True)
-        nltk.download('stopwords', quiet=True)
-        nltk.download('wordnet', quiet=True)
-        nltk.download('omw-1.4', quiet=True)
-        nltk.download('punkt_tab', quiet=True)
-    finally:
-        sys.stdout = old_stdout
+        for resource in ['punkt', 'stopwords', 'wordnet', 'omw-1.4', 'punkt_tab']:
+            try:
+                nltk.download(resource, quiet=True)
+            except Exception:
+                pass
+    except Exception:
+        pass
+    
+    # Verify NLTK data is actually usable
+    try:
+        stopwords.words('english')
+        NLTK_AVAILABLE = True
+    except Exception:
+        NLTK_AVAILABLE = False
 except Exception as e:
-    print(f"Warning: NLTK setup issue: {e}")
+    print(f"Warning: NLTK not available: {e}")
 
 
 class MentalHealthNLP:
@@ -39,7 +45,15 @@ class MentalHealthNLP:
     
     def __init__(self):
         """Initialize NLP components and knowledge bases"""
-        self.lemmatizer = WordNetLemmatizer()
+        if NLTK_AVAILABLE:
+            self.lemmatizer = WordNetLemmatizer()
+        else:
+            # Simple fallback lemmatizer
+            class SimpleLemmatizer:
+                def lemmatize(self, word):
+                    return word
+            self.lemmatizer = SimpleLemmatizer()
+        
         try:
             self.stop_words = set(stopwords.words('english'))
             # Keep important emotional words that are in default stopwords
