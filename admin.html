@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentora Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00d4ff;
+            --bg-dark: #0a0e27;
+            --bg-darker: #050812;
+            --card-bg: #1a1f3a;
+            --input-bg: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b9d4;
+            --border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a1f3a 100%);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .admin {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(26, 31, 58, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .header h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+        }
+
+        .header h2::before {
+            content: '';
+            width: 32px;
+            height: 32px;
+            background: url('logo.svg') no-repeat center;
+            background-size: contain;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav button {
+            width: 100%;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav button:hover,
+        .nav button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        #login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .login-form {
+            background: rgba(26, 31, 58, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-form h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border: 1.5px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            outline: none;
+        }
+
+        .login-form input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .login-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-toggle {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .login-toggle button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+        }
+
+        .login-toggle button:hover {
+            transform: none;
+            color: var(--accent);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .hint-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .login-features {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .section {
+            background: rgba(26, 31, 58, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            margin: 20px 0 12px 0;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin: 16px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.3);
+        }
+
+        .item {
+            background: rgba(22, 33, 62, 0.6);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            padding: 16px;
+            border-radius: 10px;
+            margin: 12px 0;
+            transition: all 0.3s;
+        }
+
+        .item:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .stat-card {
+            background: rgba(26, 31, 58, 0.6);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-num {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+        }
+
+        .admin-logo {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="login">
+        <div class="login-container">
+            <!-- Login Form -->
+            <div class="login-form">
+                <!-- Password Login -->
+                <div id="login-password" class="form-section active">
+                    <h1>🔐 Admin Login</h1>
+                    <input type="password" id="adminPwd" placeholder="Enter admin password">
+                    <button onclick="adminLogin()">Login</button>
+                    <div class="login-toggle">
+                        <button onclick="toggleForgotPassword()">Forgot Password?</button>
+                    </div>
+                </div>
+
+                <!-- Forgot Password -->
+                <div id="forgot-password" class="form-section">
+                    <h1>🔑 Forgot Password?</h1>
+
+                    <!-- Show hint directly - no input field needed -->
+                    <div id="hint-result" style="min-height: 60px; margin-top: 24px;"></div>
+
+                    <div class="login-toggle" style="margin-top: 24px;">
+                        <button onclick="toggleForgotPassword()">← Back to Login</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="login-features">
+                <div class="feature-card">
+                    <h3>📚 Smart Notes</h3>
+                    <p>Upload, manage, and organize study materials with intelligent keyword matching</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 AI Assistant</h3>
+                    <p>Powered by advanced NLP to understand queries and provide relevant information</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Real-Time Sync</h3>
+                    <p>All data automatically synced across devices with secure storage</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 Secure Access</h3>
+                    <p>Password-protected admin panel with encrypted data storage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="admin">
+        <div class="sidebar">
+            <div class="logo"><img src="logo.svg" alt="Logo" class="admin-logo"> Mentora</div>
+            <div class="nav" id="adminNav"></div>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 20px;" onclick="logout()">🔓 Logout</button>
+        </div>
+
+        <div class="main">
+            <div class="header">
+                <h2>Admin Panel</h2>
+                <button class="btn" onclick="window.location.href='/'">💬 Back to Chat</button>
+            </div>
+
+            <div class="content">
+                <div id="view-dashboard" class="view active">
+                    <h2>📊 Dashboard</h2>
+                    <div class="stats" id="stats"></div>
+                </div>
+
+                <div id="view-notes" class="view">
+                    <div class="section">
+                        <h2>📚 Notes Management</h2>
+                        <h3>Add Subject</h3>
+                        <input type="text" id="subjectName" placeholder="Subject Name"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <input type="text" id="subjectKeywords" placeholder="Keywords"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <button class="btn" onclick="addSubject()">Add Subject</button>
+                        <h3 style="margin-top: 20px;">Subjects & Units</h3>
+                        <div id="subjectsList"></div>
+                    </div>
+                </div>
+
+                <div id="view-pyq" class="view">
+                    <div class="section">
+                        <h2>📄 PYQ & Others Management</h2>
+                        <h3>Add PYQ / Timetable / Others</h3>
+
+                        <div class="form-group">
+                            <label for="pyqName">Name</label>
+                            <input type="text" id="pyqName"
+                                placeholder="Subject name (for PYQ) or Class/Semester name (for timetable)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pyqKeywords">Keywords</label>
+                            <textarea id="pyqKeywords" placeholder="Enter keywords for search and matching"
+                                rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pyqType">Type</label>
+                            <select id="pyqType">
+                                <option value="PYQ">Previous Year Question</option>
+                                <option value="Timetable">Timetable</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pyqFile">PDF File</label>
+                            <input type="file" id="pyqFile" accept=".pdf" onchange="showPyqFileName()">
+                            <span id="pyq-file-name"
+                                style="display: block; margin: 5px 0; color: #667eea; font-size: 12px;">No file
+                                selected</span>
+                        </div>
+
+                        <button class="btn" onclick="uploadPyq()">📤 Upload PDF</button>
+
+                        <h3 style="margin-top: 30px;">Uploaded PDFs</h3>
+                        <div id="pyqList"></div>
+                    </div>
+                </div>
+
+                <div id="view-info" class="view">
+                    <div class="section">
+                        <h2>📋 Information Management</h2>
+                        <h3 id="infoFormTitle">Add New Section</h3>
+                        <div class="form-group">
+                            <input type="text" id="infoCategory"
+                                placeholder="Section Name (e.g. Teachers, Fee Structure)"
+                                style="width: 100%; padding: 10px; margin: 10px 0;">
+                            <!-- Removed Global Keywords Input -->
+                            <button class="btn" id="infoSubmitBtn" onclick="addSection()">Create Section</button>
+                            <button class="btn btn-secondary" id="infoCancelBtn" onclick="cancelEditSection()"
+                                style="display: none; margin-left: 10px;">Cancel</button>
+                        </div>
+                        <h3 style="margin-top: 20px;">Sections & Details</h3>
+                        <div id="infoList"></div>
+                    </div>
+                </div>
+
+                <div id="view-unanswered" class="view">
+                    <div class="section">
+                        <h2>❓ Unanswered Queries</h2>
+                        <button onclick="testDeleteFunction()"
+                            style="background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-bottom: 10px;">Test
+                            Delete Function</button>
+                        <div id="unansweredList"></div>
+                    </div>
+                </div>
+
+                <div id="view-knowledge" class="view">
+                    <div class="section">
+                        <h2>🧠 Knowledge Base</h2>
+                        <h3>Add Q&A</h3>
+                        <input type="text" id="qaQ" placeholder="Question"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <textarea id="qaA" placeholder="Answer"
+                            style="width: 100%; padding: 10px; margin: 10px 0; min-height: 100px;"></textarea>
+                        <button class="btn" onclick="addQA()">Add Q&A</button>
+                        <h3 style="margin-top: 20px;">All Q&A</h3>
+                        <div id="qaList"></div>
+                    </div>
+                </div>
+
+                <div id="view-settings" class="view">
+                    <div class="section">
+                        <h2>🔧 Settings</h2>
+                        <h3>Change Password</h3>
+                        <input type="password" id="oldPwd" placeholder="Current Password"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <input type="password" id="newPwd" placeholder="New Password"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <input type="text" id="pwdHint" placeholder="Password Hint (optional)"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <button class="btn" onclick="changePwd()">Change Password</button>
+                    </div>
+                </div>
+
+                <div id="view-feedback" class="view">
+                    <div class="section">
+                        <h2>📝 User Feedback</h2>
+                        <div id="feedbackList"></div>
+                    </div>
+                </div>
+
+                <div id="view-chatbot-users" class="view">
+                    <div class="section">
+                        <h2><img src="logo.svg" alt="Logo" class="admin-logo"> Chatbot Password</h2>
+                        <h3>Change Chatbot Access Password</h3>
+                        <p style="color: #a0a0b8; margin-bottom: 20px;">
+                            Changing this password will <strong>immediately log out</strong> all currently active
+                            chatbot sessions.
+                            Everyone will need to log in again with the new password.
+                        </p>
+
+                        <input type="password" id="currentCbPwd" placeholder="Current Chatbot Password"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <input type="password" id="newCbPwd" placeholder="New Chatbot Password"
+                            style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <button class="btn" onclick="changeChatbotPassword()">Update Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api';
+
+        function toggleForgotPassword() {
+            const loginForm = document.getElementById('login-password');
+            const forgotForm = document.getElementById('forgot-password');
+
+            loginForm.classList.toggle('active');
+            forgotForm.classList.toggle('active');
+
+            // If showing forgot password form, load hint immediately
+            if (forgotForm.classList.contains('active')) {
+                loadPasswordHintImmediately();
+            }
+        }
+
+        async function loadPasswordHintImmediately() {
+            try {
+                const res = await fetch(API + '/admin/hint');
+                const data = await res.json();
+
+                // Clear any previous content
+                const hintResult = document.getElementById('hint-result');
+                hintResult.innerHTML = '';
+
+                if (data.hint && data.hint !== 'No hint set') {
+                    hintResult.innerHTML = `
+                        <div class="hint-box" style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 8px; padding: 16px; text-align: center;">
+                            ✓ Password Hint Found<br><br>
+                            <strong>💡 Your hint:</strong> ${data.hint}
+                        </div>
+                    `;
+                } else {
+                    hintResult.innerHTML = `
+                        <div style="color: #ff6b6b; padding: 12px; text-align: center;">
+                            ℹ️ No hint has been set yet. Contact your administrator.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('hint-result').innerHTML = `
+                    <div style="color: #ff6b6b; padding: 12px; text-align: center;">
+                        Error loading hint
+                    </div>
+                `;
+            }
+        }
+
+        function adminLogin() {
+            const pwd = document.getElementById('adminPwd').value;
+            fetch(API + '/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pwd })
+            }).then(r => r.json()).then(d => {
+                if (d.authenticated) {
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'flex';
+                    setupNav();
+                    loadDashboard();
+                } else {
+                    alert('Wrong password!');
+                }
+            });
+        }
+
+        function logout() {
+            document.getElementById('login').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+        }
+
+        function setupNav() {
+            document.getElementById('adminNav').innerHTML = `
+                <button class="active" onclick="switchView('dashboard')">📊 Dashboard</button>
+                <button onclick="switchView('notes')">📚 Notes</button>
+                <button onclick="switchView('pyq')">📄 PYQ & Others</button>
+                <button onclick="switchView('info')">📋 Info</button>
+                <button onclick="switchView('unanswered')">❓ Unanswered</button>
+                <button onclick="switchView('knowledge')">🧠 Knowledge</button>
+                <button onclick="switchView('feedback')">📝 Feedback</button>
+                <button onclick="switchView('chatbot-users')"><img src="logo.svg" alt="Logo" class="nav-icon"> Chatbot Password</button>
+                <button onclick="switchView('settings')">🔧 Settings</button>
+            `;
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (view === 'dashboard') loadDashboard();
+            else if (view === 'notes') loadNotes();
+            else if (view === 'pyq') loadPyq();
+            else if (view === 'info') loadInfo();
+            else if (view === 'unanswered') loadUnanswered();
+            else if (view === 'knowledge') loadKnowledge();
+            else if (view === 'feedback') loadFeedback();
+            else if (view === 'chatbot-users') {
+                // No load function needed for form
+                document.getElementById('currentCbPwd').value = '';
+                document.getElementById('newCbPwd').value = '';
+            }
+        }
+
+        async function loadDashboard() {
+            const res = await fetch(API + '/admin/stats');
+            const d = await res.json();
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><div class="stat-num">${d.subjects}</div>📚 Subjects</div>
+                <div class="stat-card"><div class="stat-num">${d.pyqs || 0}</div>📄 PYQ & Others</div>
+                <div class="stat-card"><div class="stat-num">${d.info_sections}</div>📋 Info Sections</div>
+                <div class="stat-card"><div class="stat-num">${d.unanswered}</div>❓ Unanswered</div>
+                <div class="stat-card"><div class="stat-num">${d.knowledge}</div>🧠 Knowledge</div>
+            `;
+        }
+
+        async function addSubject() {
+            const name = document.getElementById('subjectName').value;
+            const keywords = document.getElementById('subjectKeywords').value;
+            if (!name) { alert('Enter subject name'); return; }
+
+            await fetch(API + '/add_subject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject_name: name, keywords })
+            });
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectKeywords').value = '';
+            loadNotes();
+        }
+
+        async function loadNotes() {
+            const res = await fetch(API + '/subjects');
+            const d = await res.json();
+            let html = '';
+            for (let [name, data] of Object.entries(d.subjects || {})) {
+                html += `<div class="item" id="subject-item-${name}">
+                    <div>
+                        <strong>${name}</strong> (${Object.keys(data.units || {}).length} units)
+                        <br><small>Keywords: ${(data.keywords || []).join(', ') || 'None'}</small>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="editSubject('${name}')">✏️ Edit</button>
+                        <button class="btn" onclick="showAddUnitForm('${name}')">Add Unit</button>
+                        <button class="btn btn-danger" onclick="deleteSubject('${name}')">Delete</button>
+                    </div>
+                    <div id="subject-edit-${name}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+                        <input type="text" id="subject-edit-name-${name}" placeholder="Subject Name" value="${name}" style="width: 100%; padding: 8px; margin: 8px 0;">
+                        <input type="text" id="subject-edit-keywords-${name}" placeholder="Keywords" value="${(data.keywords || []).join(', ')}" style="width: 100%; padding: 8px; margin: 8px 0;">
+                        <button class="btn" onclick="saveSubjectEdit('${name}')" style="width: 100%; margin-top: 10px;">💾 Save Changes</button>
+                        <button class="btn btn-danger" onclick="cancelSubjectEdit('${name}')" style="width: 100%;">Cancel</button>
+                    </div>
+                    <div id="unit-form-${name}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+                        <input type="text" id="unit-name-${name}" placeholder="Unit Name" style="width: 100%; padding: 8px; margin: 8px 0;">
+                        <input type="text" id="unit-keywords-${name}" placeholder="Keywords" style="width: 100%; padding: 8px; margin: 8px 0;">
+                        <input type="file" id="unit-file-${name}" accept=".pdf" onchange="showFileName('${name}')">
+                        <span class="file-name" id="file-name-${name}" style="display: block; margin: 5px 0; color: #667eea; font-size: 12px;">No file selected</span>
+                        <button class="btn" onclick="submitUnitForm('${name}')" style="width: 100%; margin-top: 10px;">Upload Unit</button>
+                        <button class="btn btn-danger" onclick="hideUnitForm('${name}')" style="width: 100%;">Cancel</button>
+                    </div>
+                    <div id="units-list-${name}" style="margin-top: 15px;"></div>
+                </div>`;
+            }
+            document.getElementById('subjectsList').innerHTML = html || '<p>No subjects yet</p>';
+
+            for (let [name, data] of Object.entries(d.subjects || {})) {
+                let unitsHtml = '';
+                for (let [uname, udata] of Object.entries(data.units || {})) {
+                    unitsHtml += `<div class="item" style="margin-top: 10px; padding: 10px;" id="unit-item-${name}-${uname}">
+                        <strong>${uname}</strong> <br><small>Keywords: ${(udata.keywords || []).join(', ') || 'None'}</small><br>
+                        <small>📁 ${udata.filename}</small>
+                        <div style="float: right;">
+                            <button class="btn" onclick="editUnit('${name}', '${uname}')">✏️ Edit</button>
+                            <button class="btn btn-danger" onclick="deleteUnit('${name}', '${uname}')">🗑️ Delete</button>
+                        </div>
+                        <div id="unit-edit-${name}-${uname}" style="display: none; margin-top: 10px; padding: 10px; background: rgba(102, 126, 234, 0.05); border-radius: 8px; clear: both;">
+                            <input type="text" id="unit-edit-name-${name}-${uname}" placeholder="Unit Name" value="${uname}" style="width: 100%; padding: 8px; margin: 5px 0;">
+                            <input type="text" id="unit-edit-keywords-${name}-${uname}" placeholder="Keywords" value="${(udata.keywords || []).join(', ')}" style="width: 100%; padding: 8px; margin: 5px 0;">
+                            <button class="btn" onclick="saveUnitEdit('${name}', '${uname}')" style="width: 100%; margin-top: 5px;">💾 Save Changes</button>
+                            <button class="btn btn-danger" onclick="cancelUnitEdit('${name}', '${uname}')" style="width: 100%;">Cancel</button>
+                        </div>
+                    </div>`;
+                }
+                const elem = document.getElementById(`units-list-${name}`);
+                if (elem) elem.innerHTML = unitsHtml || '<small>No units yet</small>';
+            }
+        }
+
+        // Subject Edit Functions
+        function editSubject(name) {
+            document.getElementById(`subject-edit-${name}`).style.display = 'block';
+        }
+
+        function cancelSubjectEdit(name) {
+            document.getElementById(`subject-edit-${name}`).style.display = 'none';
+        }
+
+        async function saveSubjectEdit(oldName) {
+            const newName = document.getElementById(`subject-edit-name-${oldName}`).value;
+            const keywords = document.getElementById(`subject-edit-keywords-${oldName}`).value;
+
+            if (!newName) { alert('Subject name is required'); return; }
+
+            const res = await fetch(API + '/edit_subject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_name: oldName, new_name: newName, keywords })
+            });
+
+            const d = await res.json();
+            if (d.success) {
+                alert('Subject updated successfully!');
+                loadNotes();
+            } else {
+                alert('Error: ' + (d.error || 'Failed to update subject'));
+            }
+        }
+
+        // Unit Edit Functions
+        function editUnit(subject, unit) {
+            document.getElementById(`unit-edit-${subject}-${unit}`).style.display = 'block';
+        }
+
+        function cancelUnitEdit(subject, unit) {
+            document.getElementById(`unit-edit-${subject}-${unit}`).style.display = 'none';
+        }
+
+        async function saveUnitEdit(subject, oldUnitName) {
+            const newUnitName = document.getElementById(`unit-edit-name-${subject}-${oldUnitName}`).value;
+            const keywords = document.getElementById(`unit-edit-keywords-${subject}-${oldUnitName}`).value;
+
+            if (!newUnitName) { alert('Unit name is required'); return; }
+
+            const res = await fetch(API + '/edit_unit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject, old_unit_name: oldUnitName, new_unit_name: newUnitName, keywords })
+            });
+
+            const d = await res.json();
+            if (d.success) {
+                alert('Unit updated successfully!');
+                loadNotes();
+            } else {
+                alert('Error: ' + (d.error || 'Failed to update unit'));
+            }
+        }
+
+        function showFileName(subject) {
+            const file = document.getElementById(`unit-file-${subject}`).files[0];
+            const nameElem = document.getElementById(`file-name-${subject}`);
+            if (file) {
+                nameElem.textContent = '✓ ' + file.name;
+                nameElem.style.color = '#51cf66';
+            } else {
+                nameElem.textContent = 'No file selected';
+                nameElem.style.color = '#a0a0b8';
+            }
+        }
+
+        function showAddUnitForm(subject) {
+            document.getElementById(`unit-form-${subject}`).style.display = 'block';
+        }
+
+        function hideUnitForm(subject) {
+            document.getElementById(`unit-form-${subject}`).style.display = 'none';
+        }
+
+        async function submitUnitForm(subject) {
+            const unitName = document.getElementById(`unit-name-${subject}`).value;
+            const keywords = document.getElementById(`unit-keywords-${subject}`).value;
+            const fileInput = document.getElementById(`unit-file-${subject}`);
+            const file = fileInput.files[0];
+
+            if (!unitName) { alert('Enter unit name'); return; }
+            if (!file) { alert('Select a PDF file'); return; }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('unit_name', unitName);
+            formData.append('keywords', keywords);
+
+            const res = await fetch(API + `/add_unit/${encodeURIComponent(subject)}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const d = await res.json();
+            if (d.success) {
+                alert('Unit added successfully!');
+                loadNotes();
+            } else {
+                alert('Error: ' + (d.error || 'Failed to add unit'));
+            }
+        }
+
+        async function deleteSubject(name) {
+            if (!confirm('Delete ' + name + '?')) return;
+            await fetch(API + '/delete_subject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject_name: name })
+            });
+            loadNotes();
+        }
+
+        async function deleteUnit(subject, unit) {
+            if (!confirm('Delete ' + unit + '?')) return;
+            await fetch(API + '/delete_unit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject_name: subject, unit_name: unit })
+            });
+            loadNotes();
+        }
+
+        // PYQ Functions
+        function showPyqFileName() {
+            const file = document.getElementById('pyqFile').files[0];
+            const nameElem = document.getElementById('pyq-file-name');
+            if (file) {
+                nameElem.textContent = '✓ ' + file.name;
+                nameElem.style.color = '#51cf66';
+            } else {
+                nameElem.textContent = 'No file selected';
+                nameElem.style.color = '#a0a0b8';
+            }
+        }
+
+        async function uploadPyq() {
+            console.log('Upload function called');
+            const name = document.getElementById('pyqName').value;
+            const keywords = document.getElementById('pyqKeywords').value;
+            const type = document.getElementById('pyqType').value;
+            const file = document.getElementById('pyqFile').files[0];
+
+            console.log('Form data:', { name, keywords, type, file: file ? file.name : 'none' });
+
+            if (!name) { alert('Enter name'); return; }
+            if (!file) { alert('Select a PDF file'); return; }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('name', name);
+            formData.append('keywords', keywords);
+            formData.append('type', type);
+
+            console.log('Sending request to:', API + '/pyq/upload');
+
+            try {
+                const res = await fetch(API + '/pyq/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', res.status);
+                console.log('Response ok:', res.ok);
+
+                const d = await res.json();
+                console.log('Response data:', d);
+
+                if (d.success) {
+                    alert('PDF uploaded successfully!');
+                    document.getElementById('pyqName').value = '';
+                    document.getElementById('pyqKeywords').value = '';
+                    document.getElementById('pyqFile').value = '';
+                    document.getElementById('pyq-file-name').textContent = 'No file selected';
+                    document.getElementById('pyq-file-name').style.color = '#a0a0b8';
+                    loadPyq();
+                } else {
+                    alert('Error: ' + (d.error || 'Failed to upload PDF'));
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload failed: ' + error.message);
+            }
+        }
+
+        function downloadPyq(id) {
+            window.open(API + '/pyq/download/' + id, '_blank');
+        }
+
+        async function loadPyq() {
+            const res = await fetch(API + '/pyq/list');
+            const d = await res.json();
+            let html = '';
+            for (let pyq of d.pyqs || []) {
+                html += `<div class="item" id="pyq-item-${pyq.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <strong>${pyq.name}</strong>
+                            <br><small>Type: ${pyq.type}</small>
+                            <br><small>Keywords: ${(pyq.keywords || []).join(', ') || 'None'}</small>
+                            <br><small>📁 ${pyq.filename}</small>
+                            <br><small>Uploaded: ${new Date(pyq.uploaded_at).toLocaleString()}</small>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" onclick="downloadPyq('${pyq.id}')">📥 Download</button>
+                            <button class="btn" onclick="editPyq('${pyq.id}')">✏️ Edit</button>
+                            <button class="btn btn-danger" onclick="deletePyq('${pyq.id}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                    <div id="pyq-edit-${pyq.id}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.05); border-radius: 8px;">
+                        <input type="text" id="pyq-edit-name-${pyq.id}" placeholder="Name" value="${pyq.name}" style="width: 100%; padding: 8px; margin: 8px 0;">
+                        <textarea id="pyq-edit-keywords-${pyq.id}" placeholder="Keywords" rows="3" style="width: 100%; padding: 8px; margin: 8px 0;">${(pyq.keywords || []).join(', ')}</textarea>
+                        <select id="pyq-edit-type-${pyq.id}" style="width: 100%; padding: 8px; margin: 8px 0;">
+                            <option value="PYQ" ${pyq.type === 'PYQ' ? 'selected' : ''}>Previous Year Question</option>
+                            <option value="Timetable" ${pyq.type === 'Timetable' ? 'selected' : ''}>Timetable</option>
+                            <option value="Others" ${pyq.type === 'Others' ? 'selected' : ''}>Others</option>
+                        </select>
+                        <button class="btn" onclick="savePyqEdit('${pyq.id}')" style="width: 100%; margin-top: 10px;">💾 Save Changes</button>
+                        <button class="btn btn-danger" onclick="cancelPyqEdit('${pyq.id}')" style="width: 100%;">Cancel</button>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('pyqList').innerHTML = html || '<p>No PDFs uploaded yet</p>';
+        }
+
+        async function editPyq(id) {
+            document.getElementById(`pyq-edit-${id}`).style.display = 'block';
+        }
+
+        function cancelPyqEdit(id) {
+            document.getElementById(`pyq-edit-${id}`).style.display = 'none';
+        }
+
+        async function savePyqEdit(id) {
+            const name = document.getElementById(`pyq-edit-name-${id}`).value;
+            const keywords = document.getElementById(`pyq-edit-keywords-${id}`).value;
+            const type = document.getElementById(`pyq-edit-type-${id}`).value;
+
+            if (!name) { alert('Name is required'); return; }
+
+            const res = await fetch(API + '/pyq/edit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, keywords, type })
+            });
+
+            const d = await res.json();
+            if (d.success) {
+                alert('Changes saved successfully!');
+                loadPyq();
+            } else {
+                alert('Error: ' + (d.error || 'Failed to save changes'));
+            }
+        }
+
+        async function deletePyq(id) {
+            if (!confirm('Delete this PDF?')) return;
+
+            const res = await fetch(API + '/pyq/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+
+            const d = await res.json();
+            if (d.success) {
+                loadPyq();
+            } else {
+                alert('Error: ' + (d.error || 'Failed to delete PDF'));
+            }
+        }
+
+        async function addSection() {
+            const category = document.getElementById('infoCategory').value;
+
+            if (!category) { alert('Section name is required'); return; }
+
+            await fetch(API + '/add_section', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category })
+            });
+
+            document.getElementById('infoCategory').value = '';
+            loadInfo();
+        }
+
+        async function loadInfo() {
+            console.log('Loading info data...');
+            try {
+                const res = await fetch(API + '/info');
+                const d = await res.json();
+
+                let html = '';
+                let i = 0;
+                window.sectionKeys = Object.keys(d.info || {});
+
+                for (let [cat, data] of Object.entries(d.info || {})) {
+                    const escapedCat = cat.replace(/'/g, "\\'");
+
+                    let itemsHtml = '';
+                    if (data.items && Array.isArray(data.items)) {
+                        for (let item of data.items) {
+                            const escapedId = (item.id || '').replace(/'/g, "\\'");
+                            const escapedTitle = (item.title || '').replace(/'/g, "\\'");
+
+                            itemsHtml += `<div class="item" style="background: rgba(0,0,0,0.2); margin: 8px 0; border-left: 3px solid var(--accent);">
+                                <strong>${(item.content || '').substring(0, 50)}...</strong>
+                                <p style="font-size: 0.9em; color: #b0b9d4; margin: 5px 0;">${item.content.substring(0, 100)}...</p>
+                                <small>Keywords: ${(item.keywords || []).join(', ')}</small>
+                                <div style="margin-top: 8px;">
+                                    <button class="btn btn-sm" style="padding: 4px 8px; font-size: 12px;" onclick="editItem('${escapedCat}', '${escapedId}')">Edit</button>
+                                    <button class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 12px;" onclick="deleteItem('${escapedCat}', '${escapedId}')">Delete</button>
+                                </div>
+                                
+                                <!-- Hidden Edit Form for Item -->
+                                <div id="item-edit-${escapedId}" style="display: none; background: rgba(0,0,0,0.3); padding: 10px; margin-top: 10px; border-radius: 4px;">
+                                    <!-- Removed Title Input -->
+                                    <textarea id="edit-item-content-${escapedId}" style="width: 100%; margin-bottom: 5px; padding: 5px; min-height: 60px;">${item.content}</textarea>
+                                    <input type="text" id="edit-item-keywords-${escapedId}" value="${(item.keywords || []).join(', ')}" style="width: 100%; margin-bottom: 5px; padding: 5px;">
+                                    <button class="btn btn-sm" onclick="saveItemEdit('${escapedCat}', '${escapedId}')">Save</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('item-edit-${escapedId}').style.display = 'none'">Cancel</button>
+                                </div>
+                            </div>`;
+                        }
+                    }
+
+                    html += `<div class="section" style="background: rgba(26, 31, 58, 0.6); margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSection(${i})">
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0; color: var(--primary); font-size: 1.2em;">
+                                    <span id="icon-${i}">▶</span> ${cat}
+                                </h3>
+                                <!-- Removed Global Keywords Display -->
+                            </div>
+                            <div onclick="event.stopPropagation()" style="min-width: 150px; text-align: right;">
+                                <button class="btn btn-sm" onclick="editSection(${i})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteSection(${i})">Delete</button>
+                            </div>
+                        </div>
+
+                        <!-- Expandable Content Container -->
+                        <div id="section-content-${i}" style="display: none; margin-top: 15px; border-top: 1px solid rgba(102, 126, 234, 0.2); padding-top: 15px;">
+                            
+                            <!-- Rename Section Form -->
+                            <div id="section-edit-${i}" style="display: none; padding: 10px; background: rgba(0,0,0,0.2); margin-bottom: 10px;" onclick="event.stopPropagation()">
+                                <input type="text" id="edit-section-name-${i}" value="${cat}" placeholder="New Name" style="width: 100%; padding: 8px; margin-bottom: 8px;">
+                                <!-- Removed Keywords Input -->
+                                <button class="btn btn-sm" onclick="saveSectionEdit(${i})">Save</button>
+                                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('section-edit-${i}').style.display='none'">Cancel</button>
+                            </div>
+
+                            <!-- Add Item Form -->
+                            <div style="background: rgba(102, 126, 234, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                                <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--accent);">+ Add New Item to ${cat}</h4>
+                                <div style="display: grid; gap: 8px;">
+                                    <!-- Removed Title Input -->
+                                    <textarea id="new-item-content-${i}" placeholder="Details / Content" style="padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--input-bg); color: white; min-height: 60px;"></textarea>
+                                    <input type="text" id="new-item-keywords-${i}" placeholder="Specific Keywords" style="padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--input-bg); color: white;">
+                                    <button class="btn btn-sm" onclick="addItem(${i})" style="justify-self: start;">Add Item</button>
+                                </div>
+                            </div>
+
+                            <!-- Items List -->
+                            <div class="items-list">
+                                ${itemsHtml || '<p style="font-size: 0.9em; color: #666; font-style: italic;">No items yet.</p>'}
+                            </div>
+                        </div>
+                    </div>`;
+                    i++;
+                }
+
+                document.getElementById('infoList').innerHTML = html || '<p>No sections yet</p>';
+            } catch (error) {
+                console.error('Error loading info:', error);
+                document.getElementById('infoList').innerHTML = '<p>Error loading info sections</p>';
+            }
+        }
+
+        function toggleSection(index) {
+            const content = document.getElementById(`section-content-${index}`);
+            const icon = document.getElementById(`icon-${index}`);
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+
+        async function deleteSection(index) {
+            const cat = window.sectionKeys[index];
+            if (!cat) { alert('Error: Section not found'); return; }
+
+            if (!confirm(`Delete section "${cat}" and ALL its items?`)) return;
+            await fetch(API + '/delete_section', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category: cat })
+            });
+            loadInfo();
+        }
+
+        async function addItem(index) {
+            console.log('addItem called with index:', index);
+            const section = window.sectionKeys[index];
+            console.log('Section found:', section);
+            if (!section) { alert('Error: Section not found'); return; }
+
+            const content = document.getElementById(`new-item-content-${index}`).value;
+            const keywords = document.getElementById(`new-item-keywords-${index}`).value;
+            console.log('Content:', content);
+            console.log('Keywords:', keywords);
+
+            if (!content) { alert('Content is required'); return; }
+
+            try {
+                console.log('Sending request to add item...');
+                const response = await fetch(API + '/add_info_item', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ section, title: '', content, keywords })
+                });
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response result:', result);
+
+                if (result.success) {
+                    // Clear the form
+                    document.getElementById(`new-item-content-${index}`).value = '';
+                    document.getElementById(`new-item-keywords-${index}`).value = '';
+                    console.log('Item added successfully, reloading info...');
+                    loadInfo();
+                } else {
+                    alert('Error adding item: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error adding item:', error);
+                alert('Error adding item: ' + error.message);
+            }
+        }
+
+        async function deleteItem(section, itemId) {
+            if (!confirm('Delete this item?')) return;
+            await fetch(API + '/delete_info_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ section, id: itemId })
+            });
+            loadInfo();
+        }
+
+        function editItem(section, itemId) {
+            document.getElementById(`item-edit-${itemId}`).style.display = 'block';
+        }
+
+        async function saveItemEdit(section, itemId) {
+            // Title is removed
+            const content = document.getElementById(`edit-item-content-${itemId}`).value;
+            const keywords = document.getElementById(`edit-item-keywords-${itemId}`).value;
+
+            await fetch(API + '/edit_info_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ section, id: itemId, title: '', content, keywords })
+            });
+            loadInfo();
+        }
+
+        function editSection(index) {
+            // Force expand BEFORE showing form
+            const content = document.getElementById(`section-content-${index}`);
+            const icon = document.getElementById(`icon-${index}`);
+
+            content.style.display = 'block';
+            icon.textContent = '▼';
+
+            // Show edit form
+            document.getElementById(`section-edit-${index}`).style.display = 'block';
+        }
+
+        async function saveSectionEdit(index) {
+            const oldCat = window.sectionKeys[index];
+            if (!oldCat) { alert('Error: Section not found'); return; }
+
+            const newCat = document.getElementById(`edit-section-name-${index}`).value;
+
+            await fetch(API + '/edit_section', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    original_category: oldCat,
+                    new_category: newCat
+                })
+            });
+            loadInfo();
+        }
+
+        function cancelEditSection() {
+            // Placeholder if needed for main form reset
+            document.getElementById('infoCategory').value = '';
+        }
+
+        async function updateInfo() {
+            const originalCategory = document.getElementById('infoCategory').getAttribute('data-original');
+            const newCategory = document.getElementById('infoCategory').value.trim();
+            const content = document.getElementById('infoContent').value.trim();
+            const keywords = document.getElementById('infoKeywords').value.split(',').map(k => k.trim()).filter(k => k);
+
+            if (!newCategory || !content) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const res = await fetch(API + '/edit_info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        original_category: originalCategory,
+                        new_category: newCategory,
+                        content: content,
+                        keywords: keywords
+                    })
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    // Clear stored data to force refresh
+                    window.infoData = {};
+                    cancelEditInfo();
+                    loadInfo();
+                } else {
+                    alert('Error updating info: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error updating info: ' + error.message);
+            }
+        }
+
+        async function loadUnanswered() {
+            const res = await fetch(API + '/unanswered');
+            const d = await res.json();
+            let html = '';
+            for (let q of d.unanswered || []) {
+                // Store query data in a global object to avoid quote escaping issues
+                if (!window.unansweredQueries) window.unansweredQueries = {};
+                const queryId = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                window.unansweredQueries[queryId] = q.query;
+
+                html += `<div class="item" style="background: rgba(0,0,0,0.2); margin: 8px 0; border-left: 3px solid var(--accent);">
+                    <div style="flex: 1;">
+                        <strong>❓ ${q.query}</strong>
+                        <br><small>${q.asked_at}</small>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteUnansweredById('${queryId}', this.closest('.item'))" style="margin-top: 0; white-space: nowrap;">Delete</button>
+                </div>`;
+            }
+            document.getElementById('unansweredList').innerHTML = html || '<p>No unanswered queries</p>';
+        }
+
+        async function deleteUnansweredById(queryId, element) {
+            console.log('deleteUnansweredById called with ID:', queryId);
+            console.log('Available queries:', window.unansweredQueries);
+
+            const query = window.unansweredQueries[queryId];
+            if (!query) {
+                console.error('Query not found for ID:', queryId);
+                alert('Error: Query not found');
+                return;
+            }
+
+            console.log('Found query to delete:', query);
+
+            if (!confirm(`Delete this query: "${query}"?`)) return;
+            try {
+                console.log('Sending delete request for query:', query);
+                const res = await fetch(API + '/delete_unanswered', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const d = await res.json();
+                console.log('Delete response:', d);
+                if (d.success) {
+                    console.log('Delete successful, removing element');
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.textContent = 'Query deleted successfully!';
+                    successMsg.style.cssText = 'background: #4CAF50; color: white; padding: 10px; margin: 10px 0; border-radius: 4px;';
+                    element.parentNode.insertBefore(successMsg, element);
+
+                    // Remove the element AFTER inserting the success message
+                    element.remove();
+
+                    setTimeout(() => successMsg.remove(), 3000);
+                } else {
+                    console.error('Delete failed:', d);
+                    alert('Error deleting query: ' + (d.error || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error('Error deleting query:', e);
+                alert('Error deleting query: ' + e.message);
+            }
+        }
+
+        function testDeleteFunction() {
+            console.log('=== TESTING DELETE FUNCTION ===');
+            console.log('window.unansweredQueries:', window.unansweredQueries);
+            console.log('deleteUnansweredById function exists:', typeof deleteUnansweredById);
+
+            if (window.unansweredQueries && Object.keys(window.unansweredQueries).length > 0) {
+                const firstId = Object.keys(window.unansweredQueries)[0];
+                console.log('First query ID:', firstId);
+                console.log('First query value:', window.unansweredQueries[firstId]);
+                alert(`Test: Found query ID "${firstId}" with value "${window.unansweredQueries[firstId]}"`);
+            } else {
+                alert('Test: No queries loaded or window.unansweredQueries is empty');
+            }
+        }
+
+        async function loadKnowledge() {
+            const res = await fetch(API + '/knowledge');
+            const d = await res.json();
+            let html = '';
+            for (let qa of d.knowledge || []) {
+                html += `<div class="item">
+                    <strong>Q: ${qa.question}</strong><br>
+                    <p style="margin: 8px 0;">${qa.answer.substring(0, 100)}...</p>
+                    <small>Added: ${qa.created_at}</small>
+                    <button class="btn btn-danger" onclick="deleteKnowledge(${qa.id})" style="margin-top: 10px;">Delete</button>
+                </div>`;
+            }
+            document.getElementById('qaList').innerHTML = html || '<p>No Q&A yet</p>';
+        }
+
+        async function addQA() {
+            const q = document.getElementById('qaQ').value;
+            const a = document.getElementById('qaA').value;
+            if (!q || !a) { alert('Fill both fields'); return; }
+
+            await fetch(API + '/add_knowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: q, answer: a })
+            });
+            document.getElementById('qaQ').value = '';
+            document.getElementById('qaA').value = '';
+            loadKnowledge();
+        }
+
+        async function deleteKnowledge(id) {
+            if (!confirm('Delete this Q&A?')) return;
+            await fetch(API + '/delete_knowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            loadKnowledge();
+        }
+
+        async function loadFeedback() {
+            const res = await fetch(API + '/feedback');
+            const d = await res.json();
+            let html = '';
+            for (let f of d.feedback || []) {
+                html += `<div class="item">
+                    <strong>📝 ${f.text || f.message}</strong><br>
+                    <small>${f.submitted_at || f.created_at}</small>
+                    <button class="btn btn-danger" onclick="deleteFeedback('${encodeURIComponent(f.text || f.message)}', '${f.submitted_at || f.created_at}')" style="margin-top: 10px;">Delete</button>
+                </div>`;
+            }
+            document.getElementById('feedbackList').innerHTML = html || '<p>No feedback yet</p>';
+        }
+
+        async function deleteFeedback(text, timestamp) {
+            if (!confirm('Delete this feedback?')) return;
+            await fetch(API + '/delete_feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: decodeURIComponent(text), submitted_at: timestamp })
+            });
+            loadFeedback();
+        }
+
+        async function changePwd() {
+            const old = document.getElementById('oldPwd').value;
+            const newPwd = document.getElementById('newPwd').value;
+            const hint = document.getElementById('pwdHint').value;
+            if (!old || !newPwd) { alert('Fill password fields'); return; }
+
+            const res = await fetch(API + '/admin/change_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_password: old, new_password: newPwd, hint })
+            });
+            const d = await res.json();
+            if (d.success) {
+                alert('Password changed!');
+                document.getElementById('oldPwd').value = '';
+                document.getElementById('newPwd').value = '';
+                document.getElementById('pwdHint').value = '';
+            } else {
+                alert('Error changing password');
+            }
+        }
+
+        async function changeChatbotPassword() {
+            const current = document.getElementById('currentCbPwd').value;
+            const newPwd = document.getElementById('newCbPwd').value;
+            if (!current || !newPwd) { alert('Fill both fields'); return; }
+
+            const res = await fetch(API + '/admin/change_chatbot_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_password: current, new_password: newPwd })
+            });
+            const d = await res.json();
+            if (d.success) {
+                alert('Chatbot password updated successfully!');
+                document.getElementById('currentCbPwd').value = '';
+                document.getElementById('newCbPwd').value = '';
+            } else {
+                alert('Error: ' + (d.error || 'Failed to update password'));
+            }
+        }
+    </script>
+</body>
+
+</html>

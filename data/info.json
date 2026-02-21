@@ -1,0 +1,80 @@
+{
+  "Teachers details": {
+    "keywords": [],
+    "items": [
+      {
+        "id": "1770654467919586",
+        "title": "Name: Remya R\nPhone no: 9947151028\nSubject: Comput...",
+        "content": "Name: Remya R\nPhone no: 9947151028\nSubject: Computer Organization, Introduction to Microprocessor, Enterprise Java Programming\n\n\nName: Ajitha A\nPhone no: 9846846576\nSubjects: C, C++, Operating System, Java Programming Software Engineering, Data Communication and Network\n\n\nName: Kripa P P\nPhone no: 9562100215\nSubjects: DBMS, Introduction to Compiler\n\n\nName: Sreesa E\nPhone no: 9496707311\nSubjects: Linux Administration, Information Security, Network Programming\n\n\nName: Shajeena M\nPhone no: 9747723554\nSubject: Web Technology, Discrete Mathematics\n\n\nName: Shijil K V\nPhone no: 8281372215\nSubject: Data Structure, Python Programming, Desing and Analysis of Algorithm\n\n\nName: Abdul Vahab K\nPhone no: 9037461827\nSubject: Introduction to Microprocessor",
+        "keywords": [
+          "teacher's details",
+          "teachers details",
+          "teachers details",
+          "teacher's details",
+          "cs faculty information",
+          "cs teachers",
+          "cs teachers"
+        ],
+        "created_at": "2026-02-09T21:57:47.919599",
+        "updated_at": "2026-02-09T23:27:20.500583"
+      }
+    ],
+    "created_at": "2026-02-09T21:51:16.342313"
+  },
+  "Fee structure": {
+    "keywords": [],
+    "items": [
+      {
+        "id": "1770655448935406",
+        "title": "BCA Fee Structure\n\nSemester 1: 15500 (14500+ 1000 ...",
+        "content": "BCA Fee Structure\n\nSemester 1: 15500 (14500+ 1000 - special fee)\nSemester 2: 14500\nSemester 3: 15500 (14500+ 1000 - special fee)\nSemester 4: 14500\nSemester 5: 15500 (14500+ 1000 - special fee)\nSemester 6: 14500\n",
+        "keywords": [
+          "fee structure",
+          "cs semester fee",
+          "bca semester fee",
+          "bca fee",
+          "cs fee"
+        ],
+        "created_at": "2026-02-09T22:14:08.935427",
+        "updated_at": "2026-02-09T22:54:15.777174"
+      },
+      {
+        "id": "1770655683591307",
+        "title": "Bsc CS Fee Structure\n\nSemester 1: 15500 (14500+ 10...",
+        "content": "Bsc CS Fee Structure\n\nSemester 1: 15500 (14500+ 1000 - special fee)\nSemester 2: 14500\nSemester 3: 15500 (14500+ 1000 - special fee)\nSemester 4: 14500\nSemester 5: 15500 (14500+ 1000 - special fee)\nSemester 6: 14500\n",
+        "keywords": [
+          "fee structure",
+          "cs semester fee",
+          "bsc cs semester fee",
+          "bsc cs fee",
+          "cs fee"
+        ],
+        "created_at": "2026-02-09T22:18:03.591333",
+        "updated_at": "2026-02-09T22:21:56.301185"
+      }
+    ],
+    "created_at": "2026-02-09T22:06:51.353441"
+  },
+  "College Details": {
+    "keywords": [],
+    "items": [
+      {
+        "id": "1771221156909873",
+        "title": "Morazha Co-operative Arts and Science College popu...",
+        "content": "Morazha Co-operative Arts and Science College popularly known as STEMS College Morazha is a Higher Educational Institution that is being managed and operated under Morazha Educational Co-operative Society Ltd. No. C 1742. The founding vision of the society is to offer quality education at an affordable cost under a cooperative framework\nWe are committed to promoting social justice and ensuring accessibility to higher education to the underprivileged. Most of the beneficiaries of this college are economically and socially backward classes. The institution is committed to fostering an educational environment that is both engaging and inclusive, one that supports the dreams, talents, and aspirations of every student.",
+        "keywords": [
+          "college details",
+          "details about our college",
+          "morazha co-operative arts and science",
+          "stems ?",
+          "stems college",
+          "details about college"
+        ],
+        "created_at": "2026-02-16T11:22:36.909912",
+        "updated_at": "2026-02-16T11:34:54.527288"
+      }
+    ],
+    "created_at": "2026-02-16T11:14:42.628897",
+    "updated_at": "2026-02-16T11:15:09.119537"
+  }
+}

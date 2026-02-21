@@ -1,0 +1,25 @@
+{
+  "1": {
+    "id": "1",
+    "name": "Statistical Methods",
+    "keywords": [
+      "statistical methods",
+      "pyq",
+      "1st sem statistical methods question paper"
+    ],
+    "type": "PYQ",
+    "filename": "Statistical_Methods_20260208_112626.pdf",
+    "uploaded_at": "2026-02-08T11:26:26.716624",
+    "updated_at": "2026-02-08T11:41:45.352939"
+  },
+  "2": {
+    "id": "2",
+    "name": "question paper",
+    "keywords": [
+      "pyq"
+    ],
+    "type": "PYQ",
+    "filename": "question_paper_20260210_144002.pdf",
+    "uploaded_at": "2026-02-10T14:40:02.567284"
+  }
+}

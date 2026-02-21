@@ -1,0 +1,175 @@
+/* LOGIN OVERLAY */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 8, 18, 0.98);
+    backdrop-filter: blur(20px);
+    z-index: 2000;
+    display: none; /* Changed from 'flex' by JS */
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.login-box {
+    background: rgba(26, 31, 58, 0.8);
+    padding: 50px;
+    border-radius: 24px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    text-align: center;
+    width: 420px;
+    box-shadow: 0 0 40px rgba(102, 126, 234, 0.2);
+}
+
+.login-logo {
+    font-size: 64px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.login-box h2 {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.login-box p {
+    color: #b0b9d4;
+    margin-bottom: 30px;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 16px;
+    background: rgba(22, 33, 62, 0.9);
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.login-box input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.login-box button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.login-box button:hover {
+    transform: translateY(-2px);
+}
+
+.login-error {
+    color: #ff6b6b;
+    margin-top: 15px;
+    min-height: 20px;
+}
+
+/* FEEDBACK MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1500;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1a1f3a;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    color: #b0b9d4;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    color: white;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-content textarea {
+    width: 100%;
+    height: 120px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    margin-bottom: 20px;
+    resize: none;
+    outline: none;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* HEADER ACTIONS */
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    background: rgba(26, 31, 58, 0.5);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}

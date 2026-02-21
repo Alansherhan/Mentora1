@@ -1,0 +1,46 @@
+{
+  "dbms": [
+    "database management system",
+    "database",
+    "db"
+  ],
+  "cs": [
+    "computer science",
+    "comp sci"
+  ],
+  "java": [
+    "programming",
+    "coding",
+    "oop"
+  ],
+  "notes": [
+    "note",
+    "material",
+    "study material",
+    "unit",
+    "chapter"
+  ],
+  "exam": [
+    "test",
+    "examination",
+    "quiz",
+    "exm",
+    "exams",
+    "tests"
+  ],
+  "faculty": [
+    "teacher",
+    "professor",
+    "staff",
+    "instructor",
+    "sir",
+    "madam"
+  ],
+  "schedule": [
+    "timetable",
+    "time",
+    "timing",
+    "class",
+    "period"
+  ]
+}
