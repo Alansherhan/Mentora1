@@ -10,12 +10,15 @@ from typing import Dict, List, Any, Optional
 from werkzeug.utils import secure_filename
 from mental_health_nlp import MentalHealthNLP
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+# Base directory - ensures paths work on PythonAnywhere
+BASE_DIR = Path(__file__).resolve().parent
+
+app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path='')
 
 # Configuration
-UPLOAD_FOLDER = Path('notes')
-DATA_DIR = Path('data')
-CHATS_DIR = Path('chats')
+UPLOAD_FOLDER = BASE_DIR / 'notes'
+DATA_DIR = BASE_DIR / 'data'
+CHATS_DIR = BASE_DIR / 'chats'
 SALT = "smartbuddy_salt_2024"
 
 # Ensure directories
@@ -367,7 +370,7 @@ class NotesManager:
 class PYQManager:
     def __init__(self, data_manager: DataManager):
         self.data_manager = data_manager
-        self.pyq_dir = Path('pyq_files')
+        self.pyq_dir = BASE_DIR / 'pyq_files'
         self.pyq_dir.mkdir(exist_ok=True)
 
     def get_pyqs(self) -> Dict[str, Any]:
