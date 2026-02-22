@@ -45,6 +45,8 @@ async function sendMessage() {
         // Handle different response types
         if (data.type === 'text') {
             addMessage(data.message, 'assistant');
+        } else if (data.type === 'ai_response') {
+            addMessage(data.message, 'assistant', true);
         } else if (data.type === 'subjects_list') {
             displaySubjects(data);
         } else if (data.type === 'units_list') {
@@ -70,12 +72,13 @@ async function sendMessage() {
     }
 }
 
-function addMessage(text, role) {
+function addMessage(text, role, isAI = false) {
     const container = document.getElementById('chatContainer');
 
     const message = document.createElement('div');
     message.className = `message ${role}`;
-    message.innerHTML = `<div class="bubble ${role}">${escapeHtml(text)}</div>`;
+    const aiBadge = (isAI && role === 'assistant') ? '<span class="ai-badge">✨ AI</span>' : '';
+    message.innerHTML = `<div class="bubble ${role}">${aiBadge}${escapeHtml(text)}</div>`;
 
     container.appendChild(message);
     const chatContainer = document.getElementById('chatContainer');

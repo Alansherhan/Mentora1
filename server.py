@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load .env file (API keys etc.)
+
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from pathlib import Path
 import json
@@ -9,6 +13,7 @@ import os
 from typing import Dict, List, Any, Optional
 from werkzeug.utils import secure_filename
 from mental_health_nlp import MentalHealthNLP
+from ai_service import AIService
 
 # Base directory - ensures paths work on PythonAnywhere
 BASE_DIR = Path(__file__).resolve().parent
@@ -491,11 +496,12 @@ class PYQManager:
 
 # ============= CHATBOT =============
 class ChatBot:
-    def __init__(self, data_manager: DataManager, nlp_processor: NLPProcessor, notes_manager: NotesManager, pyq_manager: PYQManager):
+    def __init__(self, data_manager: DataManager, nlp_processor: NLPProcessor, notes_manager: NotesManager, pyq_manager: PYQManager, ai_service: AIService = None):
         self.data_manager = data_manager
         self.nlp_processor = nlp_processor
         self.notes_manager = notes_manager
         self.pyq_manager = pyq_manager
+        self.ai_service = ai_service
 
     def process_query(self, query: str, login_timestamp: str = None) -> Dict[str, Any]:
         # Validate Session
@@ -834,25 +840,32 @@ class ChatBot:
             if self.nlp_processor.fuzzy_match(query, qa.get('question', '')) > 75:
                 return {'type': 'text', 'message': qa.get('answer', '')}
 
-        # 4. Unanswered / Fallback
-        unanswered = self.data_manager.load_json(DATA_DIR / 'unanswered_queries.json')
-        unanswered.append({'query': query, 'asked_at': datetime.datetime.now().isoformat()})
-        self.data_manager.save_json(DATA_DIR / 'unanswered_queries.json', unanswered)
-
-        return {
-            'type': 'text',
-            'message': "I'm sorry, I don't have specific information about that topic. The admin will add relevant information soon. Is there anything else I can help you with today?"
-        }
+        # 4. Fallback - delegate to AI-powered fallback handler
+        return self._handle_info_or_unknown(query)
 
     def _handle_info_or_unknown(self, query: str) -> Dict[str, Any]:
-        """Fallback handler for unknown queries - ONLY gives polite responses"""
+        """Smart fallback: tries AI first, then gives polite generic response"""
         
         # Save as unanswered for admin review
         unanswered = self.data_manager.load_json(DATA_DIR / 'unanswered_queries.json')
         unanswered.append({'query': query, 'asked_at': datetime.datetime.now().isoformat()})
         self.data_manager.save_json(DATA_DIR / 'unanswered_queries.json', unanswered)
 
-        # Return a polite, generic fallback - NO unrelated suggestions
+        # Try AI-powered response first
+        if self.ai_service and self.ai_service.is_available():
+            try:
+                print(f"DEBUG: Sending to AI: '{query}'")
+                ai_response = self.ai_service.generate_response(query)
+                if ai_response:
+                    print(f"DEBUG: AI response received: '{ai_response[:100]}...'")
+                    return {
+                        'type': 'ai_response',
+                        'message': ai_response
+                    }
+            except Exception as e:
+                print(f"DEBUG: AI service error: {e}")
+
+        # Fallback if AI is unavailable or fails
         return {
             'type': 'text',
             'message': "I'm sorry, I don't have information about that specific topic. The admin will add relevant content to help with such questions in the future."
@@ -864,7 +877,8 @@ nlp_processor = NLPProcessor(data_manager)
 notes_manager = NotesManager(data_manager)
 pyq_manager = PYQManager(data_manager)
 mental_health_nlp = MentalHealthNLP()
-chatbot = ChatBot(data_manager, nlp_processor, notes_manager, pyq_manager)
+ai_service = AIService()  # Reads GROQ_API_KEY and GEMINI_API_KEY from env
+chatbot = ChatBot(data_manager, nlp_processor, notes_manager, pyq_manager, ai_service)
 
 # ============= ROUTES =============
 @app.route('/')
@@ -874,6 +888,10 @@ def index():
 @app.route('/admin')
 def admin():
     return send_from_directory(str(BASE_DIR), 'admin.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(str(BASE_DIR), 'icon-192.png', mimetype='image/png')
 
 # Chat API
 # Chat API
